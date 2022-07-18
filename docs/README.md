@@ -1,18 +1,18 @@
 ---
 home: true
+heroImage: /images/logo.jpeg
+heroText: Mr.wyh 的前端知识点记录
+tagline: 仰天大笑出门去，我辈岂是茼蒿人！
 actions:
-  - text: 前端知识
-    link: /interview/base/types.html
+  - text: 欢迎来到我的世界 →
+    link: /
     type: primary
-  - text: 软件推荐
-    link: /software/cross-platform.html
-    type: secondary
 features:
-  - title: 前端知识
-    details: js vue react node css 等
+  - title: 前端知识点
+    details: 平时学习的知识总结
   - title: 踩坑记录
-    details: 各种兼容问题
-  - title: 软件推荐
-    details: 记录好用的软件、浏览器扩展、编辑器插件等
-footer: MIT Licensed | Copyright © 2019-present maomao1996
+    details: 开发中遇到的疑难杂症
+  - title: 生活记录
+    details: 记录美好生活
+footer: 成熟不是心变老，是眼泪打转还能笑
 ---
