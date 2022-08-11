@@ -4,7 +4,7 @@
  * @Author: 阿鸿
  * @Date: 2022-07-14 17:03:30
  * @LastEditors: 阿鸿
- * @LastEditTime: 2022-08-04 15:10:36
+ * @LastEditTime: 2022-08-08 19:27:32
  */
 const { defaultTheme } = require('@vuepress/theme-default');
 const { searchPlugin } = require('@vuepress/plugin-search');
@@ -67,8 +67,8 @@ module.exports = {
         ],
       },
       {
-        text: 'Git',
-        link: '/git/',
+        text: '基本技能',
+        link: '/common/',
       },
       {
         text: '技术分享',

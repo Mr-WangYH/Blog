@@ -4,7 +4,7 @@
  * @Author: 阿鸿
  * @Date: 2022-07-18 17:16:26
  * @LastEditors: 阿鸿
- * @LastEditTime: 2022-08-04 20:44:12
+ * @LastEditTime: 2022-08-05 09:41:26
 -->
 
 # promise
@@ -160,11 +160,6 @@ const p3 = new Promise((resolve, reject) => {
 
 Promise.allSettled([p1, p2, p3]).then((res) => {
   console.log(res);
-  //Promise {<pending>}
-  //[[Prototype]]: Promise
-  //[[PromiseState]]: "fulfilled"
-  //[[PromiseResult]]: undefined
-
   //[{status: 'fulfilled', value: 1},{status: 'rejected', reason: 2},{status: 'fulfilled', value: 3}]
 });
 ```
@@ -195,10 +190,6 @@ const p3 = new Promise((resolve, reject) => {
 Promise.race([p1, p2, p3])
   .then((res) => {
     console.log(res);
-    //Promise {<pending>}
-    //[[Prototype]]: Promise
-    //[[PromiseState]]: "fulfilled"
-    //[[PromiseResult]]: undefined
   })
   .catch((err) => {
     console.log(err); // 2
