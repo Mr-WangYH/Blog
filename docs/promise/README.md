@@ -4,7 +4,7 @@
  * @Author: 阿鸿
  * @Date: 2022-07-18 17:16:26
  * @LastEditors: 阿鸿
- * @LastEditTime: 2022-08-05 09:41:26
+ * @LastEditTime: 2022-08-12 18:34:20
 -->
 
 # promise
@@ -13,11 +13,15 @@
 
 Promise 是 ES6 的新特性，是异步编程的一种解决方案，从语法上说，Promise 是一个对象，从它可以获取异步操作的消息，可以解决回调地狱(回调地狱嵌套回调函数)；
 
-Promise 的含义：本身不是异步，是封装异步操作容器，统一异步的标准；
+Promise 的含义：
 
-Promise 对象的特点：对象的状态不受外界影响，一旦状态改变，就不会再变，任何时候都可以得到这个结果；
+本身不是异步，是封装异步操作容器，统一异步的标准；
 
-## 传统的异步操作
+Promise 对象的特点：
+
+对象的状态不受外界影响，一旦状态改变，就不会再变，任何时候都可以得到这个结果；Promise 对象的状态改变，只有两种可能：从 pending 变为 fulfilled 和从 pending 变为 rejected。
+
+### 传统的异步操作
 
 ```js
 <script src="node_modules/jquery/dist/jquery.js"></script>
@@ -39,7 +43,7 @@ Promise 对象的特点：对象的状态不受外界影响，一旦状态改变
 
 如果下一个异步依赖上一个异步，需要在上一个异步的回调中去处理下一次的异步，这样的代码会造成嵌套（回调地狱）的问题,会难以阅读和维护。
 
-## 利用 Promise 处理异步
+### 利用 Promise 处理异步
 
 ES6 规定，Promise 对象是一个构造函数，用来生成 Promise 实例。
 
@@ -87,7 +91,7 @@ promiseGetBooks
   });
 ```
 
-## Promise 的优缺点及状态
+### Promise 的优缺点及状态
 
 - 优点
 
@@ -105,7 +109,7 @@ promiseGetBooks
   2. Fulfilled 执行态：不能再去改变状态，必须包含一个最终值（value）
   3. Rejected 不能再去改变状态，必须包含一个拒绝的原因（reason）
 
-## 静态方法-all
+### 静态方法-all
 
 Promise.all()参数可以传递一个数组，数组中记录所有的 promise 异步处理
 
@@ -135,7 +139,7 @@ Promise.all([p1, p2, p3]).then((res) => {
 });
 ```
 
-## 静态方法-allSettled
+### 静态方法-allSettled
 
 Promise.all 和 allSettled 基本一样，区别是，then 始终可以获取到异步的状态，哪怕其中有一个失败
 
@@ -164,7 +168,7 @@ Promise.allSettled([p1, p2, p3]).then((res) => {
 });
 ```
 
-## 静态方法-race
+### 静态方法-race
 
 Promise.race 使用和 all 一样，但是只返回第一个结果，不管成功或失败
 
@@ -196,7 +200,7 @@ Promise.race([p1, p2, p3])
   });
 ```
 
-## 静态方法-any
+### 静态方法-any
 
 Promise.any 返回第一个成功的结果
 
@@ -224,11 +228,11 @@ Promise.race([p1, p2, p3]).then((res) => {
 });
 ```
 
-## promise A+规范
+### promise A+规范
 
 [原文](https://promisesaplus.com/#notes) [译文](https://zhuanlan.zhihu.com/p/143204897)
 
-## Promise 源码解析
+### Promise 源码解析
 
 ```js
 /*
@@ -402,7 +406,6 @@ class Promise {
     if (this.status === PENDING) {
       this.status = RESOLVED;
       this.value = v;
-      console.log(this.onFullFilledCallbacks);
       this.onFullFilledCallbacks.forEach((c) => c());
     }
   };
@@ -490,7 +493,7 @@ Promise.deferred = function () {
 module.exports = Promise;
 ```
 
-## 总结
+### 总结
 
 1. new Promise 的时候并且传递了回调参数
 
@@ -512,6 +515,120 @@ module.exports = Promise;
 
     有一个 resolvePromise 方法，这个方法会得到 onFullFilled(then 的成功回调)返回值，在该方法内部判断返回值是否为 promise
 
-- 如果不是 promise 调用 resolve（备注：then 默认返回的 promise），讲值传递到下一个 then 中
+- 如果不是 promise 调用 resolve（备注：then 默认返回的 promise），将值传递到下一个 then 中
 - 如果是 promise 有可能 promise 中调用 resolve 继续返回 promise 所以，继续递归调用 resolvePromise，一直到 x 不是 promise，就再次走上一条了
 - 所以不管我们在 then 的成功回调用有没有返回 promise，实际上下一个 then 都是由上一个 then 默认返回的 promise 中的 resolve 返回的结果
+
+## generator 函数
+
+Generator 函数是 ES6 提供的一种异步编程解决方案，作用是函数执行时可以进行暂停
+
+- **形式上：** Generator 函数是一个普通的函数，不过相对于普通函数多出了两个特征。一是在 function 关键字和函数明之间多了’\*'号；二是函数内部使用了 yield 表达式，用于定义 Generator 函数中的每个状态。
+- **语法上：** Generator 函数封装了多个内部状态(通过 yield 表达式定义内部状态)。执行 Generator 函数时会返回一个遍历器对象(Iterator(迭代器)对象)。也就是说，Generator 是遍历器对象生成函数，函数内部封装了多个状态。通过返回的 Iterator 对象，可以依次遍历(调用 next 方法)Generator 函数的每个内部状态。
+- **调用上：** 普通函数在调用之后会立即执行，而 Generator 函数调用之后不会立即执行，而是会返回遍历器对象(Iterator 对象)。通过 Iterator 对象的 next 方法来遍历内部 yield 表达式定义的每一个状态。
+
+### generator 函数的使用
+
+```js
+function* myGenerator() {
+  yield 'Hello';
+  yield 'world';
+  return 'ending';
+}
+
+let MG = myGenerator();
+
+MG.next(); // {value:'Hello',done:false}   value是yield后面的值
+MG.next(); // {value:'world',done:false}
+MG.next(); // {value:'ending',done:true}
+MG.next(); // {value:'undefined',done:false}
+```
+
+遍历器对象的 next 方法的运行逻辑如下：
+
+- 遇到 yield 表达式，就暂停执行后面的操作，并将紧跟在 yield 后面的那个表达式的值，作为返回的对象的 value 属性值。
+- 下一次调用 next 方法时，再继续往下执行，直到遇到下一个 yield 表达式。
+- 如果没有再遇到新的 yield 表达式，就一直运行到函数结束，直到 return 语句为止，并将 return 语句后面的表达式的值，作为返回的对象的 value 属性值。
+- 如果该函数没有 return 语句，则返回的对象的 value 属性值为 undefined。
+
+需要注意的是，yield 表达式后面的表达式，只有当调用 next 方法、内部指针指向该语句时才会执行 \*
+
+### next 方法的参数
+
+yield 表达式本身没有返回值，或者说总是返回 undefined。next 方法可以带一个参数，该参数就会被当作上一个 yield 表达式的返回值。
+
+```js
+function* foo(x) {
+  var y = 2 * (yield x + 1);
+  var z = yield y / 3;
+  return x + y + z;
+}
+
+var a = foo(5);
+a.next(); // Object{value:6, done:false}
+a.next(); // Object{value:NaN, done:false}
+a.next(); // Object{value:NaN, done:true}
+
+var b = foo(5);
+b.next(); // { value:6, done:false } 第一个next相当于是调用函数
+b.next(12); // { value:8, done:false }
+b.next(13); // { value:42, done:true }
+```
+
+注意，由于 next 方法的参数表示上一个 yield 表达式的返回值，所以在第一次使用 next 方法时，传递参数是无效的。V8 引擎直接忽略第一次使用 next 方法时的参数，只有从第二次使用 next 方法开始，参数才是有效的。从语义上讲，第一个 next 方法用来启动遍历器对象，所以不用带有参数。
+
+### promise + generator + co 库
+
+```js
+function* fn() {
+  yield new Promise((resolve) => {
+    setTimeout(() => {
+      console.log(1);
+      resolve();
+    }, 2000);
+  });
+
+  yield new Promise((resolve) => {
+    setTimeout(() => {
+      console.log(2);
+      resolve();
+    }, 1000);
+  });
+
+  yield new Promise((resolve) => {
+    setTimeout(() => {
+      console.log(3);
+      resolve();
+    }, 3000);
+  });
+}
+
+const gen = fn();
+gen.next().value.then(() => {
+  gen.next().value.then(() => {
+    gen.next();
+  });
+});
+```
+
+改成递归方式调用
+
+```js
+function co(gen) {
+  const res = gen.next();
+  if (res.done) return;
+  res.value.then(() => {
+    co(gen);
+  });
+}
+```
+
+但是此时没有考虑 co 的返回值为 promise, 所以 co 方法还需返回 promise，一旦返回 promise 又要考虑成功和失败的结果，此时直接使用 co 库。
+
+co 库用于 Generator 函数的自动执行
+
+```js
+npm i co
+import co from 'co'
+co(gen)
+```
