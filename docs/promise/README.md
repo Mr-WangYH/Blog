@@ -4,7 +4,7 @@
  * @Author: 阿鸿
  * @Date: 2022-07-18 17:16:26
  * @LastEditors: 阿鸿
- * @LastEditTime: 2022-08-12 18:34:20
+ * @LastEditTime: 2022-08-16 20:51:59
 -->
 
 # promise
@@ -577,6 +577,42 @@ b.next(13); // { value:42, done:true }
 
 注意，由于 next 方法的参数表示上一个 yield 表达式的返回值，所以在第一次使用 next 方法时，传递参数是无效的。V8 引擎直接忽略第一次使用 next 方法时的参数，只有从第二次使用 next 方法开始，参数才是有效的。从语义上讲，第一个 next 方法用来启动遍历器对象，所以不用带有参数。
 
+### Thunk 函数
+
+Thunk 函数在 Javascript 中，目的就是将多参数函数（入参中包含了 callback 函数）变成单参数版本的函数。而且单参数只能是 callback 函数。
+
+```js
+//正常nodejs 中读取文件的函数
+fs.readFile('data1.json', 'utf-8', (err, data) => {
+  // 获取文件内容
+});
+//封装成thunk函数
+const thunk = function (fileName, codeType) {
+  // 返回一个只接受 callback 参数的函数
+  return function (callback) {
+    fs.readFile(fileName, codeType, callback);
+  };
+};
+const readFileThunk = thunk('data1.json', 'utf-8');
+readFileThunk((err, data) => {
+  // 获取文件内容
+});
+```
+
+上面代码的封装，是我们手动来做的，还可以直接使用第三方的 thunkify 库。
+
+```js
+npm i thunkify --save
+const thunkify = require('thunkify')
+const thunk = thunkify(fs.readFile)
+const readFileThunk = thunk('data1.json', 'utf-8')
+readFileThunk((err, data) => {
+    // 获取文件内容
+})
+```
+
+Thunk 最大的作用就是⽤于 Generator 函数的⾃动流程管理。[参考链接](https://es6.ruanyifeng.com/#docs/generator-async#Thunk-%E5%87%BD%E6%95%B0)
+
 ### promise + generator + co 库
 
 ```js
@@ -631,4 +667,34 @@ co 库用于 Generator 函数的自动执行
 npm i co
 import co from 'co'
 co(gen)
+```
+
+## async/await
+
+ES2017 标准引入了 async 函数，使得异步操作变得更加方便，async 函数是什么？一句话，它就是 Generator 函数的语法糖。[参考链接](https://es6.ruanyifeng.com/#docs/async)
+
+async 函数对 Generator 函数的改进，体现在以下四点：
+
+1. 内置执行器。
+
+Generator 函数的执行必须靠执行器，所以才有了 co 模块，而 async 函数自带执行器。也就是说，async 函数的执行，与普通函数一模一样，只要一行。
+
+2. 更好的语义。
+
+async 和 await，比起星号和 yield，语义更清楚了。async 表示函数里有异步操作，await 表示紧跟在后面的表达式需要等待结果。
+
+3. 更广的适用性。
+
+co 模块约定，yield 命令后面只能是 **Thunk** 函数或 Promise 对象，而 async 函数的 await 命令后面，可以是 Promise 对象和原始类型的值（数值、字符串和布尔值，但这时会自动转成立即 resolved 的 Promise 对象）。
+
+4. 返回值是 Promise。
+
+async 函数的返回值是 Promise 对象，这比 Generator 函数的返回值是 Iterator 对象方便多了。你可以用 then 方法指定下一步的操作。
+
+```js
+async function f() {
+  return 'hello world';
+}
+f().then((v) => console.log(v));
+// "hello world"
 ```
